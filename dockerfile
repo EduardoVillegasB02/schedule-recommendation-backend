@@ -1,9 +1,14 @@
 # Dockerfile - Backend NestJS
 # Sistema de Recomendación y Generación de Horarios - UNI
 
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
+
+# Instalar dependencias del sistema necesarias para Prisma
+RUN apt-get update && \
+    apt-get install -y openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copiar archivos de dependencias
 COPY package*.json ./
@@ -11,7 +16,7 @@ COPY yarn.lock ./
 COPY prisma ./prisma/
 
 # Instalar dependencias con yarn
-RUN yarn install --frozen-lockfile --legacy-peer-deps && \
+RUN yarn install --frozen-lockfile && \
     yarn cache clean
 
 # Copiar código fuente
@@ -26,12 +31,14 @@ RUN yarn build
 # ==========================
 # Stage de producción
 # ==========================
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 
 WORKDIR /app
 
-# Instalar curl para healthcheck
-RUN apk add --no-cache curl
+# Instalar dependencias del sistema
+RUN apt-get update && \
+    apt-get install -y curl openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copiar dependencias de producción desde builder
 COPY --from=builder /app/node_modules ./node_modules
@@ -40,8 +47,8 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package*.json ./
 
 # Crear usuario no-root
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001 && \
+RUN groupadd -g 1001 nodejs && \
+    useradd -r -u 1001 -g nodejs nestjs && \
     mkdir -p /app/logs && \
     chown -R nestjs:nodejs /app
 
