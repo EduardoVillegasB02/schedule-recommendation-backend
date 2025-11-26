@@ -24,9 +24,18 @@ export class ProfesorController {
     return this.profesorService.create(dto);
   }
 
-  @Roles('ALUMNO')
+  @Roles('ALUMNO', 'ADMIN')
   @Get()
-  findAll(@Query() dto: SearchDto) {
+  findAll(@Query() query?: any) {
+    // Si no hay query params o están vacíos, usar valores por defecto
+    const page = query?.page ? parseInt(query.page, 10) : 1;
+    const limit = query?.limit ? parseInt(query.limit, 10) : 10;
+    
+    const dto: SearchDto = {
+      page: isNaN(page) ? 1 : page,
+      limit: isNaN(limit) ? 10 : limit,
+      search: query?.search,
+    };
     return this.profesorService.findAll(dto);
   }
 

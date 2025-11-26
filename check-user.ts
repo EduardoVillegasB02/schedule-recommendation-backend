@@ -2,23 +2,30 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function checkUser() {
-  const user = await prisma.usuario.findUnique({
-    where: { email: 'gabriel.ferre.c@uni.edu.pe' },
-    include: { alumno: true }
+async function checkUsers() {
+  // Verificar usuarios existentes
+  const users = await prisma.usuario.findMany({
+    include: {
+      alumno: true,
+      profesor: true,
+    },
   });
   
-  console.log('Usuario encontrado:');
-  console.log(JSON.stringify(user, null, 2));
-  
-  if (user) {
-    console.log('\nPassword en BD (Base64):', user.password);
-    const expectedHash = Buffer.from('alumno123').toString('base64');
-    console.log('Password esperado (Base64):', expectedHash);
-    console.log('¿Coinciden?', user.password === expectedHash);
-  }
+  console.log('=== USUARIOS EXISTENTES ===\n');
+  users.forEach(user => {
+    console.log(`Email: ${user.email}`);
+    console.log(`Rol: ${user.rol}`);
+    console.log(`Password (Base64): ${user.password}`);
+    if (user.alumno) {
+      console.log(`Alumno: ${user.alumno.codigo} - ${user.alumno.nombres} ${user.alumno.apellidos}`);
+    }
+    if (user.profesor) {
+      console.log(`Profesor: ${user.profesor.codigo_profesor} - ${user.profesor.nombre}`);
+    }
+    console.log('---\n');
+  });
   
   await prisma.$disconnect();
 }
 
-checkUser();
+checkUsers();

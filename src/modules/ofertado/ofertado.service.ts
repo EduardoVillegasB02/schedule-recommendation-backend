@@ -14,7 +14,29 @@ export class OfertadoService {
   }
 
   async findAll() {
-    return await this.prisma.curso_ofertado.findMany();
+    return await this.prisma.curso_ofertado.findMany({
+      include: {
+        curso: {
+          select: {
+            id: true,
+            codigo: true,
+            nombre: true,
+            creditos: true,
+          },
+        },
+        profesor: {
+          select: {
+            id: true,
+            codigo_profesor: true,
+            nombre: true,
+          },
+        },
+      },
+      orderBy: [
+        { semestre: 'desc' },
+        { curso: { codigo: 'asc' } },
+      ],
+    });
   }
 
   async findOne(id: number) {

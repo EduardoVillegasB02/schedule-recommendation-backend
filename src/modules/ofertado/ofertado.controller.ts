@@ -20,23 +20,25 @@ import { JwtAuthGuard, Roles, RolesGuard } from '../../auth/guard';
 export class OfertadoController {
   constructor(private readonly ofertadoService: OfertadoService) {}
   
-  @Roles('ALUMNO', 'PROFESOR')
+  @Roles('ALUMNO', 'PROFESOR', 'ADMIN')
   @Post()
   create(@Body() createOfertadoDto: CreateOfertadoDto) {
     return this.ofertadoService.create(createOfertadoDto);
   }
 
-  @Roles('ALUMNO', 'PROFESOR')
+  @Roles('ALUMNO', 'PROFESOR', 'ADMIN')
   @Get()
   findAll() {
     return this.ofertadoService.findAll();
   }
 
+  @Roles('ALUMNO', 'PROFESOR', 'ADMIN')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ofertadoService.findOne(+id);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -45,6 +47,7 @@ export class OfertadoController {
     return this.ofertadoService.update(+id, updateOfertadoDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ofertadoService.remove(+id);

@@ -17,7 +17,7 @@ export class ProfesorService {
   async findAll(dto: SearchDto) {
     const { search, ...pagination } = dto;
     const where: any = {};
-    if (search) where.codigo = { contains: search, mode: 'insensitive' };
+    if (search) where.codigo_profesor = { contains: search, mode: 'insensitive' };
     return await paginationHelper(
       this.prisma.profesor,
       {
@@ -27,7 +27,6 @@ export class ProfesorService {
           nombre: true,
           popularidad: true,
           experiencia_anios: true,
-          estado: true,
         },
         where,
         orderBy: { nombre: 'asc' },
