@@ -48,6 +48,55 @@ export class ProfesorService {
     });
   }
 
+  async searchAdvanced(filters: {
+    codigo_profesor?: string;
+    nombre?: string;
+    experiencia_min?: number;
+    experiencia_max?: number;
+    popularidad_min?: number;
+  }) {
+    const where: any = {};
+
+    if (filters.codigo_profesor) {
+      where.codigo_profesor = {
+        contains: filters.codigo_profesor,
+        mode: 'insensitive',
+      };
+    }
+
+    if (filters.nombre) {
+      where.nombre = { contains: filters.nombre, mode: 'insensitive' };
+    }
+
+    if (
+      filters.experiencia_min !== undefined ||
+      filters.experiencia_max !== undefined
+    ) {
+      where.experiencia_anios = {};
+      if (filters.experiencia_min !== undefined) {
+        where.experiencia_anios.gte = filters.experiencia_min;
+      }
+      if (filters.experiencia_max !== undefined) {
+        where.experiencia_anios.lte = filters.experiencia_max;
+      }
+    }
+
+    if (filters.popularidad_min !== undefined) {
+      where.popularidad = { gte: filters.popularidad_min };
+    }
+
+    const profesores = await this.prisma.profesor.findMany({
+      where,
+      orderBy: { nombre: 'asc' },
+      take: 100, // Limitar resultados
+    });
+
+    return {
+      total: profesores.length,
+      profesores,
+    };
+  }
+
   delete(id: number) {
     return `This action removes a #${id} Profesor`;
   }

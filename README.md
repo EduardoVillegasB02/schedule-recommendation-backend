@@ -1,48 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend API - Sistema de Horarios UNI
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST principal construida con NestJS, TypeScript y Prisma ORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Tecnologías
 
-## Description
+- **Framework**: NestJS 10.x
+- **Lenguaje**: TypeScript
+- **ORM**: Prisma 6.19.0
+- **Base de Datos**: PostgreSQL
+- **Autenticación**: JWT (JSON Web Tokens)
+- **Validación**: class-validator, class-transformer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📁 Estructura del Proyecto
 
-## Project setup
-
-```bash
-$ yarn install
+```
+backend/
+├── src/
+│   ├── auth/          # Autenticación y autorización
+│   ├── common/        # Interceptors, decorators, guards
+│   ├── modules/       # Módulos del sistema
+│   │   ├── alumno/
+│   │   ├── profesor/
+│   │   ├── curso/
+│   │   ├── ofertado/
+│   │   ├── matricula/
+│   │   ├── dashboard/  # 🆕 Dashboards por rol
+│   │   └── users/
+│   ├── prisma/        # Cliente Prisma
+│   └── main.ts
+├── prisma/
+│   └── schema.prisma  # Esquema de base de datos
+└── package.json
 ```
 
-## Compile and run the project
+## 🔧 Instalación
 
 ```bash
-# development
-$ yarn run start
+# Instalar dependencias
+npm install
 
-# watch mode
-$ yarn run start:dev
+# Generar cliente Prisma
+npx prisma generate
 
-# production mode
-$ yarn run start:prod
+# Ejecutar migraciones
+npx prisma migrate dev
 ```
+
+## ▶️ Ejecutar el Proyecto
+
+```bash
+# Desarrollo (watch mode)
+npm run start:dev
+
+# Producción
+npm run start:prod
+```
+
+**Puerto**: `http://localhost:3003`
+
+## 📚 Documentación
+
+- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Referencia completa de todos los endpoints
+- **[POSTMAN_TESTING_GUIDE.md](./POSTMAN_TESTING_GUIDE.md)** - Guía de pruebas con Postman
 
 ## Run tests
 

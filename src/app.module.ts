@@ -13,6 +13,8 @@ import { OfertadoModule } from './modules/ofertado/ofertado.module';
 import { RelativoModule } from './modules/relativo/relativo.module';
 import { RequisitoModule } from './modules/requisito/requisito.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { AuthModule } from './auth/auth.module';
     RelativoModule,
     RequisitoModule,
     AuthModule,
+    UsersModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

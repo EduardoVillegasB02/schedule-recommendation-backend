@@ -33,6 +33,27 @@ export class AlumnoController {
     return this.alumnoService.findAll(dto);
   }
 
+  @Get('search/advanced')
+  searchAlumnos(
+    @Query('codigo') codigo?: string,
+    @Query('nombres') nombres?: string,
+    @Query('apellidos') apellidos?: string,
+    @Query('ciclo_relativo') cicloRelativo?: string,
+    @Query('estado') estado?: string,
+    @Query('promedio_min') promedioMin?: string,
+    @Query('promedio_max') promedioMax?: string,
+  ) {
+    return this.alumnoService.searchAdvanced({
+      codigo,
+      nombres,
+      apellidos,
+      ciclo_relativo: cicloRelativo ? parseInt(cicloRelativo) : undefined,
+      estado,
+      promedio_min: promedioMin ? parseFloat(promedioMin) : undefined,
+      promedio_max: promedioMax ? parseFloat(promedioMax) : undefined,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.alumnoService.findOne(+id);

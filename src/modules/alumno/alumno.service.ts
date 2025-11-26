@@ -61,6 +61,59 @@ export class AlumnoService {
     return alumno;
   }
 
+  async searchAdvanced(filters: {
+    codigo?: string;
+    nombres?: string;
+    apellidos?: string;
+    ciclo_relativo?: number;
+    estado?: string;
+    promedio_min?: number;
+    promedio_max?: number;
+  }) {
+    const where: any = {};
+
+    if (filters.codigo) {
+      where.codigo = { contains: filters.codigo, mode: 'insensitive' };
+    }
+
+    if (filters.nombres) {
+      where.nombres = { contains: filters.nombres, mode: 'insensitive' };
+    }
+
+    if (filters.apellidos) {
+      where.apellidos = { contains: filters.apellidos, mode: 'insensitive' };
+    }
+
+    if (filters.ciclo_relativo !== undefined) {
+      where.ciclo_relativo = filters.ciclo_relativo;
+    }
+
+    if (filters.estado) {
+      where.estado = { contains: filters.estado, mode: 'insensitive' };
+    }
+
+    if (filters.promedio_min !== undefined || filters.promedio_max !== undefined) {
+      where.promedio = {};
+      if (filters.promedio_min !== undefined) {
+        where.promedio.gte = filters.promedio_min;
+      }
+      if (filters.promedio_max !== undefined) {
+        where.promedio.lte = filters.promedio_max;
+      }
+    }
+
+    const alumnos = await this.prisma.alumno.findMany({
+      where,
+      orderBy: { codigo: 'asc' },
+      take: 100, // Limitar resultados
+    });
+
+    return {
+      total: alumnos.length,
+      alumnos,
+    };
+  }
+
   async bulkUpload(file: Express.Multer.File) {
     const workbook = xlsx.read(file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];

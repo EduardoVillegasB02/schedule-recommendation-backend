@@ -19,19 +19,28 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    const { sub } = payload;
-    const alumno = await this.prisma.alumno.findUnique({
-      select: { codigo: true },
-      where: { codigo: sub },
+    const { sub, email, rol } = payload;
+    
+    // Buscar el usuario en la tabla usuario
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: parseInt(sub) },
+      include: {
+        alumno: true,
+        profesor: true,
+      },
     });
-    const profesor = await this.prisma.profesor.findUnique({
-      where: { codigo_profesor: sub },
-    });
-    if (!alumno && !profesor)
+
+    if (!usuario) {
       throw new UnauthorizedException('Sesión finalizada, vuelva a ingresar');
+    }
+
     return {
-      user_id: sub,
-      rol: alumno ? 'ALUMNO' : 'PROFESOR',
+      sub: usuario.id,
+      user_id: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol,
+      alumno: usuario.alumno,
+      profesor: usuario.profesor,
     };
   }
 }

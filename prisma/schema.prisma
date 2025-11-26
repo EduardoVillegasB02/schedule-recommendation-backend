@@ -28,6 +28,7 @@ model alumno {
   log_ciclo_relativo log_ciclo_relativo[]
   log_creditos       log_creditos[]
   matricula          matricula[]
+  usuario            usuario?
 }
 
 model curso {
@@ -128,4 +129,18 @@ model profesor {
   codigo_profesor   String?          @unique(map: "unique_codigo_profesor") @db.VarChar(10)
   token             String?
   curso_ofertado    curso_ofertado[]
+  usuario           usuario?
+}
+
+model usuario {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  rol        Rol       @default(ALUMNO)
+  alumno_id  Int?      @unique
+  profesor_id Int?     @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  alumno     alumno?   @relation(fields: [alumno_id], references: [id], onDelete: Cascade)
+  profesor   profesor? @relation(fields: [profesor_id], references: [id], onDelete: Cascade)
 }

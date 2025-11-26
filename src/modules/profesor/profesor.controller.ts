@@ -30,6 +30,23 @@ export class ProfesorController {
     return this.profesorService.findAll(dto);
   }
 
+  @Get('search/advanced')
+  searchProfesores(
+    @Query('codigo_profesor') codigoProfesor?: string,
+    @Query('nombre') nombre?: string,
+    @Query('experiencia_min') experienciaMin?: string,
+    @Query('experiencia_max') experienciaMax?: string,
+    @Query('popularidad_min') popularidadMin?: string,
+  ) {
+    return this.profesorService.searchAdvanced({
+      codigo_profesor: codigoProfesor,
+      nombre,
+      experiencia_min: experienciaMin ? parseInt(experienciaMin) : undefined,
+      experiencia_max: experienciaMax ? parseInt(experienciaMax) : undefined,
+      popularidad_min: popularidadMin ? parseFloat(popularidadMin) : undefined,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.profesorService.findOne(+id);

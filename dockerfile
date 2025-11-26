@@ -55,15 +55,15 @@ RUN groupadd -g 1001 nodejs && \
 USER nestjs
 
 # Exponer puerto
-EXPOSE 4000
+EXPOSE 3003
 
 # Variables de entorno por defecto
 ENV NODE_ENV=production \
-    PORT=4000
+    PORT=3003
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:4000 || exit 1
+    CMD curl -f http://localhost:3003/api || exit 1
 
 # Comando de inicio
 CMD ["node", "dist/main.js"]

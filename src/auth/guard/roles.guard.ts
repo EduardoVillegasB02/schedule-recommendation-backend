@@ -12,6 +12,10 @@ export class RolesGuard implements CanActivate {
     ]);
     if (!requiredRoles) return true;
     const { user } = context.switchToHttp().getRequest();
+    
+    // ADMIN tiene acceso a todo
+    if (user.rol === 'ADMIN') return true;
+    
     return requiredRoles.includes(user.rol);
   }
 }
