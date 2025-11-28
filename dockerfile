@@ -61,9 +61,14 @@ EXPOSE 3003
 ENV NODE_ENV=production \
     PORT=3003
 
+# Script de inicio
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:3003/api || exit 1
 
 # Comando de inicio
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "dist/main.js"]
