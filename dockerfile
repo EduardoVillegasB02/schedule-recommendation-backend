@@ -40,17 +40,22 @@ RUN apt-get update && \
     apt-get install -y curl openssl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Copiar dependencias de producción desde builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/package*.json ./
-
-# Crear usuario no-root
+# Crear usuario no-root primero
 RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs nestjs && \
-    mkdir -p /app/logs && \
-    chown -R nestjs:nodejs /app
+    useradd -r -u 1001 -g nodejs nestjs
+
+# Copiar dependencias de producción con ownership correcto
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+
+# Crear directorio de logs con ownership correcto
+RUN mkdir -p /app/logs && chown nestjs:nodejs /app/logs
+
+# Script de inicio (antes de cambiar a usuario no-root)
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 USER nestjs
 
@@ -61,14 +66,10 @@ EXPOSE 3003
 ENV NODE_ENV=production \
     PORT=3003
 
-# Script de inicio
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:3003/api || exit 1
 
 # Comando de inicio
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]

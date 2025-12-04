@@ -7,24 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Rol {
-  ADMIN
-  ALUMNO
-  PROFESOR
-}
-
 model alumno {
   id                 Int                  @id @default(autoincrement())
-  nombres            String?
-  apellidos          String?
   codigo             String               @unique @db.VarChar(20)
   promedio           Decimal?             @db.Decimal(4, 2)
   ciclo_relativo     Int
   creditos_aprobados Int?                 @default(0)
   estado             String?              @default("N") @db.VarChar(20)
   token              String?
+  apellidos          String?
   created_at         DateTime             @default(now())
   deleted_at         DateTime?
+  nombres            String?
   log_ciclo_relativo log_ciclo_relativo[]
   log_creditos       log_creditos[]
   matricula          matricula[]
@@ -133,14 +127,20 @@ model profesor {
 }
 
 model usuario {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique @db.VarChar(255)
-  password   String    @db.VarChar(255)
-  rol        Rol       @default(ALUMNO)
-  alumno_id  Int?      @unique
-  profesor_id Int?     @unique
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  alumno     alumno?   @relation(fields: [alumno_id], references: [id], onDelete: Cascade)
-  profesor   profesor? @relation(fields: [profesor_id], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  email       String    @unique @db.VarChar(255)
+  password    String    @db.VarChar(255)
+  rol         Rol       @default(ALUMNO)
+  alumno_id   Int?      @unique
+  profesor_id Int?      @unique
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  alumno      alumno?   @relation(fields: [alumno_id], references: [id], onDelete: Cascade)
+  profesor    profesor? @relation(fields: [profesor_id], references: [id], onDelete: Cascade)
+}
+
+enum Rol {
+  ADMIN
+  ALUMNO
+  PROFESOR
 }
