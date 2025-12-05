@@ -239,21 +239,18 @@ export class DashboardService {
       return acc;
     }, {} as Record<string, number>);
 
-    // Top 5 cursos con más demanda
-    const cursosConMatriculas = await this.prisma.curso_ofertado.findMany({
+    // Obtener todos los cursos del semestre para ordenar por conteo real
+    const todosCursosSemestre = await this.prisma.curso_ofertado.findMany({
       where: { semestre: semestreActual },
       include: {
         curso: true,
         profesor: true,
         matricula: true,
       },
-      orderBy: {
-        alumnos_matriculados: 'desc',
-      },
-      take: 5,
     });
 
-    const topCursosDetalle = cursosConMatriculas.map((o) => ({
+    // Mapear y ordenar por conteo real de matrículas
+    const cursosConConteo = todosCursosSemestre.map((o) => ({
       curso_codigo: o.curso.codigo,
       curso_nombre: o.curso.nombre,
       profesor: o.profesor?.nombre || 'Sin asignar',
@@ -261,6 +258,16 @@ export class DashboardService {
       matriculados: o.matricula.length,
       vacantes: o.cupos_disponibles,
     }));
+
+    // Top 5 cursos con más demanda (saturados)
+    const topCursosDetalle = cursosConConteo
+      .sort((a, b) => b.matriculados - a.matriculados)
+      .slice(0, 5);
+
+    // Top 5 cursos con baja matrícula
+    const cursosBajaMatriculaDetalle = cursosConConteo
+      .sort((a, b) => a.matriculados - b.matriculados)
+      .slice(0, 5);
 
     // Distribución de alumnos por ciclo relativo
     const distribucionCiclos = await this.prisma.alumno.groupBy({
@@ -299,6 +306,7 @@ export class DashboardService {
         cantidad,
       })),
       top_cursos_demanda: topCursosDetalle,
+      cursos_baja_matricula: cursosBajaMatriculaDetalle,
       distribucion_ciclos: distribucionCiclos.map((item) => ({
         ciclo: item.ciclo_relativo,
         alumnos: item._count,
